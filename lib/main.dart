@@ -1,7 +1,7 @@
 // import 'package:flutter/material.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
+import 'models/transaction.dart'; // Import the Transaction model
 // void main() {
 //   runApp(ExpenseTrackerApp());
 // }
@@ -72,6 +72,236 @@
 //     );
 //   }
 
+void main() => runApp(MyExpenseTrackerApp());
+
+class MyExpenseTrackerApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: ExpenseTrackerHomePage(),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+    );
+  }
+}
+
+class ExpenseTrackerHomePage extends StatefulWidget {
+  @override
+  _ExpenseTrackerHomePageState createState() => _ExpenseTrackerHomePageState();
+}
+
+class _ExpenseTrackerHomePageState extends State<ExpenseTrackerHomePage> {
+  int _selectedIndex = 0;
+
+  final List<Transaction> transactions = [
+    Transaction(
+      logo: Icon(Icons.handshake),
+      amount: 200.00,
+      party: 'John Doe',
+      date: DateTime.now(),
+      type: 'borrowed',
+    ),
+    Transaction(
+      logo: Icon(Icons.money),
+      amount: 100.00,
+      party: 'John Doe',
+      date: DateTime.now(),
+      type: 'borrowed',
+    ),
+    Transaction(
+      logo: Icon(Icons.money),
+      amount: 50.00,
+      party: 'Jane Smith',
+      date: DateTime.now().subtract(Duration(days: 1)),
+      type: 'lent',
+    ),
+    Transaction(
+      logo: Icon(Icons.handshake),
+      amount: 200.00,
+      party: 'Alice Johnson',
+      date: DateTime.now().subtract(Duration(days: 2)),
+      type: 'borrowed',
+    ),
+    // Add more transactions as needed
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // appBar: AppBar(title: Text('Expense Tracker')),
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.25,
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(
+                    255, 63, 160, 153), // Set background color to #358882
+                borderRadius: BorderRadius.only(
+                  bottomLeft:
+                      Radius.circular(80), // Adjust bottom-left corner radius
+                  // bottomRight: Radius.circular(80), // Adjust bottom-right corner radius
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Good afternoon,',
+                  style: TextStyle(fontSize: 14, color: Colors.white),
+                ),
+                const Text(
+                  'Sakshi Dhaiphule',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+                const SizedBox(height: 16),
+                const Card(
+                  elevation: 4,
+                  color: Color(0xFF2F7E79), // Set card color to #2f7e79
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Total Balance',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white, // Set text color to white
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          '\$2,548.00',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white, // Set text color to white
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Income \$1,840.00',
+                              style: TextStyle(
+                                color: Colors.white, // Set text color to white
+                              ),
+                            ),
+                            Text(
+                              'Expenses \$284.00',
+                              style: TextStyle(
+                                color: Colors.white, // Set text color to white
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Transactions History',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: transactions.length,
+                    itemBuilder: (context, index) {
+                      final transaction = transactions[index];
+                      return ListTile(
+                        leading: CircleAvatar(
+                          child: transaction.logo,
+                        ),
+                        title: Text(transaction.party),
+                        subtitle: Text(
+                            '${transaction.type} \$${transaction.amount.toStringAsFixed(2)}'),
+                        trailing: Text(
+                          '${transaction.date.day}/${transaction.date.month}/${transaction.date.year}',
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      // Navigate to all transactions screen
+                    },
+                    child: const Text('See all'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Add new transaction
+        },
+        child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: _selectedIndex == 0
+                ? Icon(Icons.home_filled)
+                : Icon(Icons.home_outlined),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: _selectedIndex == 1
+                ? Icon(Icons.bar_chart_sharp,
+                )
+                : Icon(Icons.bar_chart_outlined),
+            label: 'Expense Stats',
+          ),
+          BottomNavigationBarItem(
+            icon: _selectedIndex == 2
+                ? Icon(Icons.description_sharp,
+                )
+                : Icon(Icons.description_outlined),
+            label: 'Reports',
+          ),
+          BottomNavigationBarItem(
+            icon: _selectedIndex == 3
+                ? Icon(Icons.person_2_sharp)
+                : Icon(Icons.person_outlined),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor:
+            Color.fromARGB(255, 63, 160, 153), // Color of selected tab
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+}
+
+
 //   // Function to save the entered expense to local storage
 //   void _saveExpense() async {
 //     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -129,99 +359,3 @@
 //     );
 //   }
 // }
-
-
-import 'package:flutter/material.dart';
-
-void main() => runApp(MyExpenseTrackerApp());
-
-class MyExpenseTrackerApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: ExpenseTrackerHomePage(),
-    );
-  }
-}
-
-class ExpenseTrackerHomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Expense Tracker'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Good afternoon, Enjelin Morgaena',
-              style: TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 16),
-            const Card(
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Total Balance',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      '\$2,548.00',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Income \$1,840.00'),
-                        Text('Expenses \$284.00'),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Transactions History',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            // Replace with your transaction list widget
-            // Example: ListView.builder(itemBuilder: ...)
-            const SizedBox(height: 16),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {
-                  // Navigate to all transactions screen
-                },
-                child: const Text('See all'),
-              ),
-            ),
-             const SizedBox(height: 24),
-            // Replace with your "Send Again" section
-            // Example: Circular icons with contacts
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add new transaction
-        },
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
-
